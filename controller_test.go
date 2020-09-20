@@ -6,10 +6,10 @@ func TestThermostat_OnStartup_EverythingTurnedOff(t *testing.T) {
 	_TestThermostat(t, AssertAllOff())
 }
 func TestThermostat_WhenTooCold_BlowerAndHeaterEngaged(t *testing.T) {
-	_TestThermostat(t, MakeItTooCold(), AssertHeating(), AssertBlowing())
+	_TestThermostat(t, MakeItTooCold(), AssertHeating())
 }
 func TestThermostat_WhenTooHot_BlowerAndCoolerEngaged(t *testing.T) {
-	_TestThermostat(t, MakeItTooHot(), AssertCooling(), AssertBlowing())
+	_TestThermostat(t, MakeItTooHot(), AssertCooling())
 }
 
 func MakeItTooHot() ThermostatFixtureOption {
@@ -24,38 +24,21 @@ func MakeItTooCold() ThermostatFixtureOption {
 		this.controller.Regulate()
 	}
 }
-func AssertBlowing() ThermostatFixtureOption {
+func AssertCooling() ThermostatFixtureOption { return AssertHVACState("BLOWING COOLING heating") }
+func AssertHeating() ThermostatFixtureOption { return AssertHVACState("BLOWING cooling HEATING") }
+func AssertAllOff() ThermostatFixtureOption  { return AssertHVACState("blowing cooling heating") }
+func AssertHVACState(expected string) ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
-		if !this.hvac.IsBlowing() {
-			this.Error("Not blowing!!")
+		state := this.hvac.String()
+		if state == expected {
+			return
 		}
-	}
-}
-func AssertCooling() ThermostatFixtureOption {
-	return func(this *ThermostatFixture) {
-		if !this.hvac.IsCooling() {
-			this.Error("Not cooling!!")
-		}
-	}
-}
-func AssertHeating() ThermostatFixtureOption {
-	return func(this *ThermostatFixture) {
-		if !this.hvac.IsHeating() {
-			this.Error("Not heating!!")
-		}
-	}
-}
-func AssertAllOff() ThermostatFixtureOption {
-	return func(this *ThermostatFixture) {
-		if this.hvac.IsBlowing() {
-			this.Error("Blowing!!")
-		}
-		if this.hvac.IsCooling() {
-			this.Error("Cooling!!")
-		}
-		if this.hvac.IsHeating() {
-			this.Error("Heating!!")
-		}
+		this.Errorf("\n"+
+			"Expected: %s\n"+
+			"Actual:   %s",
+			expected,
+			state,
+		)
 	}
 }
 

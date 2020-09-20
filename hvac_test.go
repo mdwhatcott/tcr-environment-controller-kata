@@ -22,6 +22,26 @@ func (this *FakeHVAC) IsBlowing() bool { return this.blowing }
 func (this *FakeHVAC) IsCooling() bool { return this.cooling }
 func (this *FakeHVAC) IsHeating() bool { return this.heating }
 
+func (this *FakeHVAC) String() string {
+	result := ""
+	if this.blowing {
+		result += "BLOWING "
+	} else {
+		result += "blowing "
+	}
+	if this.cooling {
+		result += "COOLING "
+	} else {
+		result += "cooling "
+	}
+	if this.heating {
+		result += "HEATING"
+	} else {
+		result += "heating"
+	}
+	return result
+}
+
 type FakeGauge struct {
 	temperature int
 }
