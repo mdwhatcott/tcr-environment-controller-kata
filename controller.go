@@ -18,5 +18,8 @@ func (this *Controller) Regulate() {
 	if temperature < 70-5 {
 		this.hvac.SetBlower(true)
 		this.hvac.SetHeater(true)
+	} else if temperature > 70+5 {
+		this.hvac.SetBlower(true)
+		this.hvac.SetCooler(true)
 	}
 }

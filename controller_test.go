@@ -8,7 +8,16 @@ func TestThermostat_OnStartup_EverythingTurnedOff(t *testing.T) {
 func TestThermostat_WhenTooCold_BlowerAndHeaterEngaged(t *testing.T) {
 	_TestThermostat(t, MakeItTooCold(), AssertHeating(), AssertBlowing())
 }
+func TestThermostat_WhenTooHot_BlowerAndCoolerEngaged(t *testing.T) {
+	_TestThermostat(t, MakeItTooHot(), AssertCooling(), AssertBlowing())
+}
 
+func MakeItTooHot() ThermostatFixtureOption {
+	return func(this *ThermostatFixture) {
+		this.gauge.temperature = 70 + 5 + 1
+		this.controller.Regulate()
+	}
+}
 func MakeItTooCold() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
 		this.gauge.temperature = 70 - 5 - 1
@@ -19,6 +28,13 @@ func AssertBlowing() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
 		if !this.hvac.IsBlowing() {
 			this.Error("Not blowing!!")
+		}
+	}
+}
+func AssertCooling() ThermostatFixtureOption {
+	return func(this *ThermostatFixture) {
+		if !this.hvac.IsCooling() {
+			this.Error("Not cooling!!")
 		}
 	}
 }
