@@ -5,6 +5,7 @@ type Controller struct {
 	gauge Gauge
 
 	blowerDelay int
+	coolerDelay int
 }
 
 func NewController(hvac HVAC, gauge Gauge) *Controller {
@@ -34,6 +35,9 @@ func (this *Controller) decrementDelays() {
 	if this.blowerDelay > 0 {
 		this.blowerDelay--
 	}
+	if this.coolerDelay > 0 {
+		this.coolerDelay--
+	}
 }
 
 func (this *Controller) heat() {
@@ -53,7 +57,9 @@ func (this *Controller) idle() {
 }
 
 func (this *Controller) engageCooler() {
-	this.hvac.SetCooler(true)
+	if this.coolerDelay == 0 {
+		this.hvac.SetCooler(true)
+	}
 }
 func (this *Controller) engageBlower() {
 	this.hvac.SetBlower(true)
@@ -67,6 +73,9 @@ func (this *Controller) disengageHeater() {
 	this.hvac.SetHeater(false)
 }
 func (this *Controller) disengageCooler() {
+	if this.hvac.IsCooling() {
+		this.coolerDelay = 3
+	}
 	this.hvac.SetCooler(false)
 }
 func (this *Controller) disengageBlower() {

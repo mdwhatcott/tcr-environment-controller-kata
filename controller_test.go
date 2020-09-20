@@ -34,6 +34,25 @@ func TestThermostat_WhenTooColdThenComfy_BlowerShouldRemainOn(t *testing.T) {
 		MakeItComfy(), AssertAllOff(),
 	)
 }
+func TestThermostat_WhenTooHotThenComfyThenTooHotAgain_CoolerOnlyReengagesAfterDelay(t *testing.T) {
+	_TestThermostat(t,
+		MakeItTooHot(),
+		MakeItComfy(),
+		MakeItTooHot(), AssertBlowing(),
+		MakeItTooHot(), AssertBlowing(),
+		MakeItTooHot(), AssertCooling(),
+	)
+}
+func TestThermostat_WhenTooHotThenComfyThenTooHotThenComfy_CoolerStaysOff(t *testing.T) {
+	_TestThermostat(t,
+		MakeItTooHot(),
+		MakeItComfy(),
+		MakeItTooHot(),
+		MakeItComfy(), AssertAllOff(),
+		MakeItComfy(), AssertAllOff(),
+		MakeItComfy(), AssertAllOff(),
+	)
+}
 
 func MakeItComfy() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
@@ -41,7 +60,6 @@ func MakeItComfy() ThermostatFixtureOption {
 		this.controller.Regulate()
 	}
 }
-
 func MakeItTooHot() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
 		this.gauge.temperature = 70 + 5 + 1
