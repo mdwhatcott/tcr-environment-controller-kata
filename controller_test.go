@@ -20,6 +20,20 @@ func TestThermostat_WhenTooHotThenTooCold_BlowerAndHeaterEngaged(t *testing.T) {
 func TestThermostat_WhenTooColdThenTooHot_BlowerAndCoolerEngaged(t *testing.T) {
 	_TestThermostat(t, MakeItTooCold(), MakeItTooHot(), AssertCooling())
 }
+func TestThermostat_WhenTooHotThenComfy_EverythingOff(t *testing.T) {
+	_TestThermostat(t, MakeItTooHot(), MakeItComfy(), AssertAllOff())
+}
+func TestThermostat_WhenTooColdThenComfy_BlowerShouldRemainOn(t *testing.T) {
+	_TestThermostat(t,
+		MakeItTooCold(),
+		MakeItComfy(), AssertBlowing(),
+		MakeItComfy(), AssertBlowing(),
+		MakeItComfy(), AssertBlowing(),
+		MakeItComfy(), AssertBlowing(),
+		MakeItComfy(), AssertBlowing(),
+		MakeItComfy(), AssertAllOff(),
+	)
+}
 
 func MakeItComfy() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
@@ -27,6 +41,7 @@ func MakeItComfy() ThermostatFixtureOption {
 		this.controller.Regulate()
 	}
 }
+
 func MakeItTooHot() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
 		this.gauge.temperature = 70 + 5 + 1
@@ -39,6 +54,7 @@ func MakeItTooCold() ThermostatFixtureOption {
 		this.controller.Regulate()
 	}
 }
+func AssertBlowing() ThermostatFixtureOption { return AssertHVACState("BLOWING cooling heating") }
 func AssertCooling() ThermostatFixtureOption { return AssertHVACState("BLOWING COOLING heating") }
 func AssertHeating() ThermostatFixtureOption { return AssertHVACState("BLOWING cooling HEATING") }
 func AssertAllOff() ThermostatFixtureOption  { return AssertHVACState("blowing cooling heating") }

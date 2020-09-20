@@ -3,6 +3,8 @@ package thermostat
 type Controller struct {
 	hvac  HVAC
 	gauge Gauge
+
+	blowerDelay int
 }
 
 func NewController(hvac HVAC, gauge Gauge) *Controller {
@@ -16,15 +18,34 @@ func NewController(hvac HVAC, gauge Gauge) *Controller {
 }
 
 func (this *Controller) Regulate() {
+	if this.blowerDelay > 0 {
+		this.blowerDelay--
+	}
+
 	switch this.temperature() {
 	case TooCold:
 		this.hvac.SetBlower(true)
 		this.hvac.SetCooler(false)
-		this.hvac.SetHeater(true)
+		this.engageHeater()
 	case TooHot:
 		this.hvac.SetBlower(true)
 		this.hvac.SetCooler(true)
 		this.hvac.SetHeater(false)
+	default:
+		this.disengageBlower()
+		this.hvac.SetCooler(false)
+		this.hvac.SetHeater(false)
+	}
+}
+
+func (this *Controller) engageHeater() {
+	this.blowerDelay = 5 + 1
+	this.hvac.SetHeater(true)
+}
+
+func (this *Controller) disengageBlower() {
+	if this.blowerDelay == 0 {
+		this.hvac.SetBlower(false)
 	}
 }
 
