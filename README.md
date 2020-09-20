@@ -5,7 +5,7 @@ A demonstration of TCR and the "Environment Controller" programming kata by Robe
 
 #### The screencast:
 
-- Coming soon...
+- https://www.youtube.com/watch?v=BWo3bDRg3pU
 
 
 #### The code from the screencast:
@@ -36,3 +36,8 @@ A demonstration of TCR and the "Environment Controller" programming kata by Robe
 #### Kent Beck's substring kata demonstration: 
 
 - https://www.youtube.com/watch?v=ZrHBVTCbcE0
+
+
+#### Dave Cheney's Functional Options Presentation:
+
+- https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
