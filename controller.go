@@ -18,31 +18,57 @@ func NewController(hvac HVAC, gauge Gauge) *Controller {
 }
 
 func (this *Controller) Regulate() {
-	if this.blowerDelay > 0 {
-		this.blowerDelay--
-	}
+	this.decrementDelays()
 
 	switch this.temperature() {
 	case TooCold:
-		this.hvac.SetBlower(true)
-		this.hvac.SetCooler(false)
-		this.engageHeater()
+		this.heat()
 	case TooHot:
-		this.hvac.SetBlower(true)
-		this.hvac.SetCooler(true)
-		this.hvac.SetHeater(false)
+		this.cool()
 	default:
-		this.disengageBlower()
-		this.hvac.SetCooler(false)
-		this.hvac.SetHeater(false)
+		this.idle()
 	}
 }
 
+func (this *Controller) decrementDelays() {
+	if this.blowerDelay > 0 {
+		this.blowerDelay--
+	}
+}
+
+func (this *Controller) heat() {
+	this.engageBlower()
+	this.disengageCooler()
+	this.engageHeater()
+}
+func (this *Controller) cool() {
+	this.engageBlower()
+	this.engageCooler()
+	this.disengageHeater()
+}
+func (this *Controller) idle() {
+	this.disengageBlower()
+	this.disengageCooler()
+	this.disengageHeater()
+}
+
+func (this *Controller) engageCooler() {
+	this.hvac.SetCooler(true)
+}
+func (this *Controller) engageBlower() {
+	this.hvac.SetBlower(true)
+}
 func (this *Controller) engageHeater() {
 	this.blowerDelay = 5 + 1
 	this.hvac.SetHeater(true)
 }
 
+func (this *Controller) disengageHeater() {
+	this.hvac.SetHeater(false)
+}
+func (this *Controller) disengageCooler() {
+	this.hvac.SetCooler(false)
+}
 func (this *Controller) disengageBlower() {
 	if this.blowerDelay == 0 {
 		this.hvac.SetBlower(false)
