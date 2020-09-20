@@ -7,7 +7,11 @@ type FakeHVAC struct {
 }
 
 func NewFakeHVAC() *FakeHVAC {
-	return &FakeHVAC{}
+	return &FakeHVAC{
+		blowing: true,
+		cooling: true,
+		heating: true,
+	}
 }
 
 func (this *FakeHVAC) SetBlower(state bool) { this.blowing = state }
