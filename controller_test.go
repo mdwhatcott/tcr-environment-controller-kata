@@ -11,7 +11,22 @@ func TestThermostat_WhenTooCold_BlowerAndHeaterEngaged(t *testing.T) {
 func TestThermostat_WhenTooHot_BlowerAndCoolerEngaged(t *testing.T) {
 	_TestThermostat(t, MakeItTooHot(), AssertCooling())
 }
+func TestThermostat_WhenComfy_AllOff(t *testing.T) {
+	_TestThermostat(t, MakeItComfy(), AssertAllOff())
+}
+func TestThermostat_WhenTooHotThenTooCold_BlowerAndHeaterEngaged(t *testing.T) {
+	_TestThermostat(t, MakeItTooHot(), MakeItTooCold(), AssertHeating())
+}
+func TestThermostat_WhenTooColdThenTooHot_BlowerAndCoolerEngaged(t *testing.T) {
+	_TestThermostat(t, MakeItTooCold(), MakeItTooHot(), AssertCooling())
+}
 
+func MakeItComfy() ThermostatFixtureOption {
+	return func(this *ThermostatFixture) {
+		this.gauge.temperature = 70
+		this.controller.Regulate()
+	}
+}
 func MakeItTooHot() ThermostatFixtureOption {
 	return func(this *ThermostatFixture) {
 		this.gauge.temperature = 70 + 5 + 1
